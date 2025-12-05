@@ -292,9 +292,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_twitter) - your.email@example.com
+Your Name - [@Aws Ourari](https://www.linkedin.com/in/aws-ourari-2590891b6/) - awsourari123@gmail.com
 
-Project Link: [https://github.com/YOUR_USERNAME/animal-classifier](https://github.com/YOUR_USERNAME/animal-classifier)
+Project Link: [https://github.com/Athenwine/Pi-7ayawenet/](https://github.com/Athenwine/Pi-7ayawenet/)
 
 ## 🌟 Star History
 
