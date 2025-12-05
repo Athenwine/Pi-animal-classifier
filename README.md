@@ -294,7 +294,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Your Name - [@Aws Ourari](https://www.linkedin.com/in/aws-ourari-2590891b6/) - awsourari123@gmail.com
 
-Project Link: [https://github.com/Athenwine/Pi-7ayawenet/](https://github.com/Athenwine/Pi-7ayawenet/)
+Project Link: [https://github.com/Athenwine/Pi-animal-classifier](https://github.com/Athenwine/Pi-animal-classifier)
 
 ## 🌟 Star History
 
