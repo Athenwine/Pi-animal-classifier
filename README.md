@@ -85,7 +85,7 @@ animal-classifier/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/animal-classifier.git
+git clone https://github.com/Athenwine/Pi-animal-classifier.git
 cd animal-classifier
 ```
 
@@ -102,15 +102,19 @@ source venv/bin/activate
 
 3. **Install dependencies**
 ```bash
-pip install -r requirements.txt
+pip install tensorflow==2.15.0
+numpy==1.24.3
+pandas==2.0.3
+matplotlib==3.7.2
+seaborn==0.12.2
+scikit-learn==1.3.0
+Pillow==10.0.0
+flask==3.0.0
 ```
 
 4. **Download the trained model**
 
-Due to file size, the model is not included in the repository. Download it from:
-- [Google Drive Link](YOUR_GOOGLE_DRIVE_LINK) or
-- [Releases Page](https://github.com/YOUR_USERNAME/animal-classifier/releases)
-
+Due to file size, the model is not included in the repository you can run the V2 file on colab to obtain it
 Place the files in the project root:
 - `hierarchical_animal_classifier.keras`
 - `class_mappings.json`
@@ -126,6 +130,8 @@ http://127.0.0.1:5000
 ```
 
 ## 📦 Dataset
+
+(https://drive.google.com/drive/folders/1diKq3WuyNhswZh_RqBjAOHxBgA5UiEx4?usp=sharing)
 
 The model was trained on a custom dataset with the following structure:
 
