@@ -3,300 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animal Classifier - Classification d'Animaux</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            padding: 30px 0;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-top: 30px;
-        }
-
-        .upload-section {
-            text-align: center;
-            padding: 40px;
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            background: #f8f9ff;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .upload-section:hover {
-            border-color: #764ba2;
-            background: #f0f1ff;
-            transform: scale(1.02);
-        }
-
-        .upload-section.dragover {
-            border-color: #764ba2;
-            background: #e8e9ff;
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #ff5252 0%, #ff1744 100%);
-        }
-
-        .preview-section {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: block;
-            margin: 0 auto 20px;
-        }
-
-        .results-section {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .prediction-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 15px 0;
-            transition: all 0.3s ease;
-        }
-
-        .prediction-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .prediction-card.top-prediction {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .prediction-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .animal-name {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .confidence-badge {
-            background: rgba(255,255,255,0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        .category-tag {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 15px;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-
-        .confidence-bar {
-            width: 100%;
-            height: 10px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .confidence-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            border-radius: 5px;
-            transition: width 0.5s ease;
-        }
-
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .info-section {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 30px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .info-card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .info-card h4 {
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .error-message {
-            display: none;
-            background: #ff5252;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .button-group {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-            
-            .main-card {
-                padding: 20px;
-            }
-            
-            .prediction-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .confidence-badge {
-                margin-top: 10px;
-            }
-        }
-    </style>
+    <meta name="description" content="Classification d'animaux par IA - ESPRIT School of Business">
+    <title>Animal Classifier - ESPRIT</title>
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Favicon (optional) -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo_esb.svg') }}">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🦁 Animal Classifier</h1>
-            <p class="subtitle">Classification hiérarchique avec IA</p>
-            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;">
-                Identifie l'espèce (30 classes) ET la catégorie (6 classes)
-            </p>
-        </header>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/logo_esb.svg') }}" 
+                     alt="ESPRIT Logo" 
+                     class="esprit-logo">
+                <h1 class="project-title">Animal Classifier</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#classifier">Classifier</a></li>
+                <li><a href="#team">Notre Équipe</a></li>
+                <li><a href="#about">À Propos</a></li>
+            </ul>
+        </div>
+    </nav>
 
-        <div class="main-card">
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1>🦁 Classification d'Animaux par IA</h1>
+            <p class="subtitle">Intelligence Artificielle & Deep Learning</p>
+            <p class="description">
+                Système de classification hiérarchique utilisant TensorFlow et MobileNetV2
+                <br>
+                30 espèces • 6 catégories • 90%+ de précision
+            </p>
+        </section>
+
+        <!-- About Section - MOVED UP -->
+        <section id="about" class="main-card">
+            <h2 style="color: var(--primary-red); margin-bottom: 1.5rem; font-size: 2rem;">📚 À Propos du Projet</h2>
+            <p style="margin-bottom: 1rem; line-height: 1.8;">
+                Ce projet de classification d'animaux par intelligence artificielle a été développé 
+                dans le cadre de nos études à <strong style="color: var(--primary-red);">ESPRIT School of Business</strong>. 
+            </p>
+            <p style="margin-bottom: 1rem; line-height: 1.8;">
+                Notre système utilise des techniques avancées de deep learning pour identifier automatiquement 
+                30 espèces d'animaux réparties en 6 grandes catégories. Le modèle est basé sur l'architecture 
+                MobileNetV2 avec transfer learning, offrant une précision supérieure à 90%.
+            </p>
+            <div style="background: var(--off-white); padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0;">
+                <p style="margin-bottom: 1rem;"><strong style="color: var(--primary-red);">🛠️ Technologies utilisées:</strong></p>
+                <ul style="margin-left: 2rem; line-height: 2;">
+                    <li><strong>TensorFlow & Keras</strong> - Framework de deep learning</li>
+                    <li><strong>MobileNetV2</strong> - Architecture de réseau de neurones avec transfer learning</li>
+                    <li><strong>Flask</strong> - Framework web Python pour le backend</li>
+                    <li><strong>HTML5, CSS3, JavaScript</strong> - Interface utilisateur interactive</li>
+                    <li><strong>Python</strong> - Langage de programmation principal</li>
+                </ul>
+            </div>
+            <p style="line-height: 1.8;">
+                <strong style="color: var(--primary-red);">🎯 Objectif:</strong> Créer un système intelligent capable d'identifier 
+                avec précision différentes espèces animales, facilitant ainsi l'apprentissage et la reconnaissance automatique 
+                pour des applications éducatives, scientifiques et de conservation.
+            </p>
+        </section>
+
+        <!-- Team Section - MOVED UP -->
+        <section id="team" class="team-section">
+            <h2>👥 Notre Équipe</h2>
+            <p class="team-subtitle">Étudiants en Intelligence Artificielle - ESPRIT School of Business</p>
+            
+            <div class="team-grid">
+                <!-- Team Member 1 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/aws_ourari.jpg') }}" 
+                         alt="Aws Ourari" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=AO'">
+                    <h3 class="team-name">Aws Ourari</h3>
+                    <p class="team-role">Lead Developer & ML Engineer</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/nairi_najla.jpg') }}" 
+                         alt="Nairi Najla" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=NN'">
+                    <h3 class="team-name">Nairi Najla</h3>
+                    <p class="team-role">Data Scientist & Model Training</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/ameni_amina.jpg') }}" 
+                         alt="Ameni Amina" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=AA'">
+                    <h3 class="team-name">Ameni Amina</h3>
+                    <p class="team-role">UI/UX Designer & Frontend</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+
+                <!-- Team Member 4 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/ines_jaziri.jpg') }}" 
+                         alt="Ines Jaziri" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=IJ'">
+                    <h3 class="team-name">Ines Jaziri</h3>
+                    <p class="team-role">Data Collection & Documentation</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Classifier Section -->
+        <section id="classifier" class="main-card">
+            <h2 style="color: var(--primary-red); margin-bottom: 2rem; text-align: center; font-size: 2rem;">
+                🔍 Essayez Notre Classificateur
+            </h2>
+            <!-- Upload Section -->
             <div class="upload-section" id="uploadSection">
                 <div class="upload-icon">📷</div>
                 <h2>Choisissez ou déposez une image</h2>
-                <p style="margin: 15px 0; color: #666;">Formats acceptés: JPG, PNG, JPEG (Max 16MB)</p>
+                <p>Formats acceptés: JPG, PNG, JPEG (Max 16MB)</p>
                 <input type="file" id="fileInput" accept="image/*">
                 <button class="btn" onclick="document.getElementById('fileInput').click()">
                     📁 Sélectionner une image
                 </button>
             </div>
 
+            <!-- Error Message -->
             <div class="error-message" id="errorMessage"></div>
 
+            <!-- Preview Section -->
             <div class="preview-section" id="previewSection">
-                <h3 style="margin-bottom: 20px; color: #667eea;">📸 Image sélectionnée:</h3>
+                <h3 style="margin-bottom: 20px; color: var(--primary-red);">📸 Image sélectionnée:</h3>
                 <img id="imagePreview" class="image-preview" alt="Preview">
                 <div class="button-group">
                     <button class="btn" id="predictBtn" onclick="predictImage()">
@@ -308,18 +175,21 @@
                 </div>
             </div>
 
+            <!-- Loader -->
             <div class="loader" id="loader">
                 <div class="spinner"></div>
-                <p style="color: #667eea; font-weight: bold;">Analyse en cours...</p>
+                <p style="color: var(--primary-red); font-weight: bold;">Analyse en cours...</p>
             </div>
 
+            <!-- Results Section -->
             <div class="results-section" id="resultsSection">
-                <h3 style="margin-bottom: 20px; color: #667eea;">🎯 Résultats de la classification:</h3>
+                <h3 style="margin-bottom: 20px; color: var(--primary-red);">🎯 Résultats de la classification:</h3>
                 <div id="predictionsContainer"></div>
             </div>
 
+            <!-- Info Section -->
             <div class="info-section">
-                <h3 style="color: #667eea; margin-bottom: 15px;">📊 Catégories d'animaux disponibles</h3>
+                <h3>📊 Catégories d'animaux disponibles</h3>
                 <div class="info-grid">
                     <div class="info-card">
                         <h4>🐸 Amphibiens</h4>
@@ -347,9 +217,112 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Team Section -->
+        <section id="team" class="team-section">
+            <h2>👥 Notre Équipe</h2>
+            <p class="team-subtitle">Étudiants en Intelligence Artificielle - ESPRIT School of Business</p>
+            
+            <div class="team-grid">
+                <!-- Team Member 1 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/aws_ourari.jpg') }}" 
+                         alt="Aws Ourari" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=AO'">
+                    <h3 class="team-name">Aws Ourari</h3>
+                    <p class="team-role">Lead Developer & ML Engineer</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/nairi_najla.jpg') }}" 
+                         alt="Nairi Najla" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=NN'">
+                    <h3 class="team-name">Nairi Najla</h3>
+                    <p class="team-role">Data Scientist & Model Training</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/ameni_amina.jpg') }}" 
+                         alt="Ameni Amina" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=AA'">
+                    <h3 class="team-name">Ameni Amina</h3>
+                    <p class="team-role">UI/UX Designer & Frontend</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+
+                <!-- Team Member 4 -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/team/ines_jaziri.jpg') }}" 
+                         alt="Ines Jaziri" 
+                         class="team-photo"
+                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=IJ'">
+                    <h3 class="team-name">Ines Jaziri</h3>
+                    <p class="team-role">Data Collection & Documentation</p>
+                    <div class="team-social">
+                        <a href="#" class="social-icon" title="LinkedIn">in</a>
+                        <a href="#" class="social-icon" title="GitHub">git</a>
+                        <a href="#" class="social-icon" title="Email">@</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="main-card">
+            <h2 style="color: var(--primary-red); margin-bottom: 1rem;">📚 À Propos du Projet</h2>
+            <p style="margin-bottom: 1rem;">
+                Ce projet de classification d'animaux par intelligence artificielle a été développé 
+                dans le cadre de nos études à <strong>ESPRIT School of Business</strong>. 
+            </p>
+            <p style="margin-bottom: 1rem;">
+                <strong>Technologies utilisées:</strong>
+            </p>
+            <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                <li>TensorFlow & Keras pour le deep learning</li>
+                <li>MobileNetV2 pour le transfer learning</li>
+                <li>Flask pour le backend web</li>
+                <li>HTML/CSS/JavaScript pour l'interface</li>
+            </ul>
+            <p>
+                <strong>Objectif:</strong> Créer un système capable d'identifier 30 espèces d'animaux 
+                réparties en 6 catégories avec une précision supérieure à 90%.
+            </p>
+        </section>
+
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <p>
+            <strong>© 2025 Animal Classifier</strong> - Projet réalisé par les étudiants de 
+            <a href="https://esprit.tn" target="_blank" class="esprit-link">ESPRIT School of Business</a>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Intelligence Artificielle • Deep Learning • TensorFlow
+        </p>
+    </footer>
+
+    <!-- JavaScript -->
     <script>
         let selectedFile = null;
 
@@ -433,7 +406,7 @@
                     showError('❌ ' + (data.error || 'Erreur lors de la prédiction'));
                 }
             } catch (error) {
-                showError('❌ Erreur de connexion au serveur. Vérifiez que le serveur Flask est en cours d\'exécution.');
+                showError('❌ Erreur de connexion au serveur');
                 console.error('Error:', error);
             } finally {
                 predictBtn.disabled = false;
@@ -451,7 +424,6 @@
                 
                 const rank = index === 0 ? '🏆 ' : `${index + 1}. `;
                 
-                // Build the card HTML
                 card.innerHTML = `
                     <div class="prediction-header">
                         <div style="flex: 1;">
@@ -484,7 +456,6 @@
 
             document.getElementById('resultsSection').style.display = 'block';
             
-            // Scroll to results smoothly
             setTimeout(() => {
                 document.getElementById('resultsSection').scrollIntoView({ 
                     behavior: 'smooth', 
@@ -506,14 +477,23 @@
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
-            
-            // Scroll to error
             errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         function hideError() {
             document.getElementById('errorMessage').style.display = 'none';
         }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
     </script>
 </body>
 </html>
