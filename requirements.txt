@@ -6,3 +6,6 @@ seaborn==0.13.2
 scikit-learn==1.6.1
 Pillow==11.3.0
 flask==3.1.2
+flask-sqlalchemy==3.1.1
+flask-login==0.6.3
+werkzeug==3.1.3

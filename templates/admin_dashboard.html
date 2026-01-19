@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Animal Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .users-table {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #333;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-student {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-teacher {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-admin {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-inactive {
+            background: #fee;
+            color: #991b1b;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-toggle {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-toggle:hover {
+            background: #2563eb;
+        }
+
+        .btn-role {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-role:hover {
+            background: #d97706;
+        }
+
+        .role-form {
+            display: inline;
+        }
+
+        select {
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/logo_esb.svg') }}"
+                     alt="ESPRIT Logo"
+                     class="esprit-logo">
+                <h1 class="project-title">Animal Classifier</h1>
+            </div>
+            <ul class="nav-links">
+                {% if user.is_teacher() %}
+                <li><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
+                {% else %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('classifier') }}">Classifier</a></li>
+                <li><a href="{{ url_for('admin_dashboard') }}" class="active">Admin</a></li>
+                <li><a href="{{ url_for('logout') }}">Déconnexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="admin-header">
+            <h1>⚙️ Panneau d'Administration</h1>
+            <p>Gestion des utilisateurs et du système</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 10px; {% if category == 'success' %}background: #d1fae5; color: #065f46;{% else %}background: #fee; color: #991b1b;{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_users }}</div>
+                <div class="stat-label">👥 Utilisateurs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ total_activities }}</div>
+                <div class="stat-label">🎯 Classifications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ total_sessions }}</div>
+                <div class="stat-label">🔐 Sessions</div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table">
+            <h2 style="color: #333; margin-bottom: 1.5rem;">👥 Gestion des utilisateurs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Inscrit le</th>
+                        <th>Dernière connexion</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>
+                            <strong>{{ u.full_name or u.username }}</strong><br>
+                            <small style="color: #666;">@{{ u.username }}</small>
+                        </td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            <span class="badge badge-{{ u.role }}">
+                                {% if u.role == 'admin' %}👑{% elif u.role == 'teacher' %}👨‍🏫{% else %}👤{% endif %}
+                                {{ u.role }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-{% if u.is_active %}active{% else %}inactive{% endif %}">
+                                {% if u.is_active %}✅ Actif{% else %}❌ Inactif{% endif %}
+                            </span>
+                        </td>
+                        <td>{{ u.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if u.last_login %}
+                                {{ u.last_login.strftime('%d/%m/%Y %H:%M') }}
+                            {% else %}
+                                <span style="color: #999;">Jamais</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if u.id != user.id %}
+                            <form method="POST" action="{{ url_for('toggle_user_active', user_id=u.id) }}" style="display: inline;">
+                                <button type="submit" class="action-btn btn-toggle">
+                                    {% if u.is_active %}Désactiver{% else %}Activer{% endif %}
+                                </button>
+                            </form>
+
+                            <form method="POST" action="{{ url_for('change_user_role', user_id=u.id) }}" class="role-form">
+                                <select name="role" required>
+                                    <option value="student" {% if u.role == 'student' %}selected{% endif %}>Student</option>
+                                    <option value="teacher" {% if u.role == 'teacher' %}selected{% endif %}>Teacher</option>
+                                    <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>Admin</option>
+                                </select>
+                                <button type="submit" class="action-btn btn-role">
+                                    Changer
+                                </button>
+                            </form>
+                            {% else %}
+                            <span style="color: #999; font-size: 0.85rem;">Vous</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

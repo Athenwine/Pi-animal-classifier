@@ -18,15 +18,16 @@
     <nav class="navbar">
         <div class="navbar-content">
             <div class="logo-container">
-                <img src="{{ url_for('static', filename='images/logo_esb.svg') }}" 
-                     alt="ESPRIT Logo" 
+                <img src="{{ url_for('static', filename='images/logo_esb.svg') }}"
+                     alt="ESPRIT Logo"
                      class="esprit-logo">
                 <h1 class="project-title">Animal Classifier</h1>
             </div>
             <ul class="nav-links">
-                <li><a href="#classifier">Classifier</a></li>
-                <li><a href="#team">Notre Équipe</a></li>
                 <li><a href="#about">À Propos</a></li>
+                <li><a href="#team">Notre Équipe</a></li>
+                <li><a href="{{ url_for('login') }}" style="background: #e31e24; color: white; padding: 0.5rem 1rem; border-radius: 5px;">Connexion</a></li>
+                <li><a href="{{ url_for('signup') }}" style="background: white; color: #e31e24; padding: 0.5rem 1rem; border-radius: 5px; border: 2px solid #e31e24;">Inscription</a></li>
             </ul>
         </div>
     </nav>
@@ -43,6 +44,14 @@
                 <br>
                 30 espèces • 6 catégories • 90%+ de précision
             </p>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                <a href="{{ url_for('login') }}" class="btn" style="text-decoration: none;">
+                    🔐 Se connecter
+                </a>
+                <a href="{{ url_for('signup') }}" class="btn btn-secondary" style="text-decoration: none;">
+                    📝 Créer un compte
+                </a>
+            </div>
         </section>
 
         <!-- About Section - MOVED UP -->
@@ -142,172 +151,39 @@
             </div>
         </section>
 
-        <!-- Classifier Section -->
-        <section id="classifier" class="main-card">
+        <!-- Features Section -->
+        <section class="main-card">
             <h2 style="color: var(--primary-red); margin-bottom: 2rem; text-align: center; font-size: 2rem;">
-                🔍 Essayez Notre Classificateur
+                ✨ Fonctionnalités
             </h2>
-            <!-- Upload Section -->
-            <div class="upload-section" id="uploadSection">
-                <div class="upload-icon">📷</div>
-                <h2>Choisissez ou déposez une image</h2>
-                <p>Formats acceptés: JPG, PNG, JPEG (Max 16MB)</p>
-                <input type="file" id="fileInput" accept="image/*">
-                <button class="btn" onclick="document.getElementById('fileInput').click()">
-                    📁 Sélectionner une image
-                </button>
-            </div>
-
-            <!-- Error Message -->
-            <div class="error-message" id="errorMessage"></div>
-
-            <!-- Preview Section -->
-            <div class="preview-section" id="previewSection">
-                <h3 style="margin-bottom: 20px; color: var(--primary-red);">📸 Image sélectionnée:</h3>
-                <img id="imagePreview" class="image-preview" alt="Preview">
-                <div class="button-group">
-                    <button class="btn" id="predictBtn" onclick="predictImage()">
-                        🔍 Classifier l'animal
-                    </button>
-                    <button class="btn btn-secondary" onclick="resetUpload()">
-                        ↻ Nouvelle image
-                    </button>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>📁 Upload d'images</h4>
+                    <p>Téléchargez vos photos pour classification</p>
                 </div>
-            </div>
-
-            <!-- Loader -->
-            <div class="loader" id="loader">
-                <div class="spinner"></div>
-                <p style="color: var(--primary-red); font-weight: bold;">Analyse en cours...</p>
-            </div>
-
-            <!-- Results Section -->
-            <div class="results-section" id="resultsSection">
-                <h3 style="margin-bottom: 20px; color: var(--primary-red);">🎯 Résultats de la classification:</h3>
-                <div id="predictionsContainer"></div>
-            </div>
-
-            <!-- Info Section -->
-            <div class="info-section">
-                <h3>📊 Catégories d'animaux disponibles</h3>
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h4>🐸 Amphibiens</h4>
-                        <p>2 espèces</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>🐝 Insectes</h4>
-                        <p>4 espèces</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>🦁 Mammifères</h4>
-                        <p>10 espèces</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>🦅 Oiseaux</h4>
-                        <p>6 espèces</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>🐟 Poissons</h4>
-                        <p>4 espèces</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>🐍 Reptiles</h4>
-                        <p>4 espèces</p>
-                    </div>
+                <div class="info-card">
+                    <h4>📷 Webcam en direct</h4>
+                    <p>Classification en temps réel via webcam</p>
+                </div>
+                <div class="info-card">
+                    <h4>📊 Suivi de progrès</h4>
+                    <p>Analytics et historique d'activité</p>
+                </div>
+                <div class="info-card">
+                    <h4>👨‍🏫 Dashboard enseignant</h4>
+                    <p>Suivi des étudiants et statistiques</p>
+                </div>
+                <div class="info-card">
+                    <h4>⚙️ Admin panel</h4>
+                    <p>Gestion des utilisateurs et rôles</p>
+                </div>
+                <div class="info-card">
+                    <h4>🎯 30 espèces</h4>
+                    <p>Classification dans 6 catégories</p>
                 </div>
             </div>
         </section>
 
-        <!-- Team Section -->
-        <section id="team" class="team-section">
-            <h2>👥 Notre Équipe</h2>
-            <p class="team-subtitle">Étudiants en Intelligence Artificielle - ESPRIT School of Business</p>
-            
-            <div class="team-grid">
-                <!-- Team Member 1 -->
-                <div class="team-member">
-                    <img src="{{ url_for('static', filename='images/team/aws_ourari.jpg') }}" 
-                         alt="Aws Ourari" 
-                         class="team-photo"
-                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=AO'">
-                    <h3 class="team-name">Aws Ourari</h3>
-                    <p class="team-role">Lead Developer & ML Engineer</p>
-                    <div class="team-social">
-                        <a href="#" class="social-icon" title="LinkedIn">in</a>
-                        <a href="#" class="social-icon" title="GitHub">git</a>
-                        <a href="#" class="social-icon" title="Email">@</a>
-                    </div>
-                </div>
-
-                <!-- Team Member 2 -->
-                <div class="team-member">
-                    <img src="{{ url_for('static', filename='images/team/nairi_najla.jpg') }}" 
-                         alt="Nairi Najla" 
-                         class="team-photo"
-                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=NN'">
-                    <h3 class="team-name">Nairi Najla</h3>
-                    <p class="team-role">Data Scientist & Model Training</p>
-                    <div class="team-social">
-                        <a href="#" class="social-icon" title="LinkedIn">in</a>
-                        <a href="#" class="social-icon" title="GitHub">git</a>
-                        <a href="#" class="social-icon" title="Email">@</a>
-                    </div>
-                </div>
-
-                <!-- Team Member 3 -->
-                <div class="team-member">
-                    <img src="{{ url_for('static', filename='images/team/ameni_amina.jpg') }}" 
-                         alt="Ameni Amina" 
-                         class="team-photo"
-                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=AA'">
-                    <h3 class="team-name">Ameni Amina</h3>
-                    <p class="team-role">UI/UX Designer & Frontend</p>
-                    <div class="team-social">
-                        <a href="#" class="social-icon" title="LinkedIn">in</a>
-                        <a href="#" class="social-icon" title="GitHub">git</a>
-                        <a href="#" class="social-icon" title="Email">@</a>
-                    </div>
-                </div>
-
-                <!-- Team Member 4 -->
-                <div class="team-member">
-                    <img src="{{ url_for('static', filename='images/team/ines_jaziri.jpg') }}" 
-                         alt="Ines Jaziri" 
-                         class="team-photo"
-                         onerror="this.src='https://via.placeholder.com/150/e31e24/ffffff?text=IJ'">
-                    <h3 class="team-name">Ines Jaziri</h3>
-                    <p class="team-role">Data Collection & Documentation</p>
-                    <div class="team-social">
-                        <a href="#" class="social-icon" title="LinkedIn">in</a>
-                        <a href="#" class="social-icon" title="GitHub">git</a>
-                        <a href="#" class="social-icon" title="Email">@</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about" class="main-card">
-            <h2 style="color: var(--primary-red); margin-bottom: 1rem;">📚 À Propos du Projet</h2>
-            <p style="margin-bottom: 1rem;">
-                Ce projet de classification d'animaux par intelligence artificielle a été développé 
-                dans le cadre de nos études à <strong>ESPRIT School of Business</strong>. 
-            </p>
-            <p style="margin-bottom: 1rem;">
-                <strong>Technologies utilisées:</strong>
-            </p>
-            <ul style="margin-left: 2rem; margin-bottom: 1rem;">
-                <li>TensorFlow & Keras pour le deep learning</li>
-                <li>MobileNetV2 pour le transfer learning</li>
-                <li>Flask pour le backend web</li>
-                <li>HTML/CSS/JavaScript pour l'interface</li>
-            </ul>
-            <p>
-                <strong>Objectif:</strong> Créer un système capable d'identifier 30 espèces d'animaux 
-                réparties en 6 catégories avec une précision supérieure à 90%.
-            </p>
-        </section>
 
     </div>
 
@@ -324,166 +200,6 @@
 
     <!-- JavaScript -->
     <script>
-        let selectedFile = null;
-
-        // File input handler
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            handleFile(e.target.files[0]);
-        });
-
-        // Drag and drop handlers
-        const uploadSection = document.getElementById('uploadSection');
-        
-        uploadSection.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            uploadSection.classList.add('dragover');
-        });
-
-        uploadSection.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
-        });
-
-        uploadSection.addEventListener('drop', function(e) {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
-            handleFile(e.dataTransfer.files[0]);
-        });
-
-        function handleFile(file) {
-            if (!file) return;
-
-            if (!file.type.startsWith('image/')) {
-                showError('❌ Veuillez sélectionner une image valide (JPG, PNG, JPEG)');
-                return;
-            }
-
-            if (file.size > 16 * 1024 * 1024) {
-                showError('❌ L\'image est trop grande. Taille maximum: 16MB');
-                return;
-            }
-
-            selectedFile = file;
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                document.getElementById('imagePreview').src = e.target.result;
-                document.getElementById('uploadSection').style.display = 'none';
-                document.getElementById('previewSection').style.display = 'block';
-                document.getElementById('resultsSection').style.display = 'none';
-                hideError();
-            };
-            
-            reader.readAsDataURL(file);
-        }
-
-        async function predictImage() {
-            if (!selectedFile) return;
-
-            const predictBtn = document.getElementById('predictBtn');
-            const loader = document.getElementById('loader');
-            const resultsSection = document.getElementById('resultsSection');
-            
-            predictBtn.disabled = true;
-            loader.style.display = 'block';
-            resultsSection.style.display = 'none';
-            hideError();
-
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-
-            try {
-                const response = await fetch('/predict', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    displayResults(data.predictions);
-                } else {
-                    showError('❌ ' + (data.error || 'Erreur lors de la prédiction'));
-                }
-            } catch (error) {
-                showError('❌ Erreur de connexion au serveur');
-                console.error('Error:', error);
-            } finally {
-                predictBtn.disabled = false;
-                loader.style.display = 'none';
-            }
-        }
-
-        function displayResults(predictions) {
-            const container = document.getElementById('predictionsContainer');
-            container.innerHTML = '';
-
-            predictions.forEach((pred, index) => {
-                const card = document.createElement('div');
-                card.className = 'prediction-card' + (index === 0 ? ' top-prediction' : '');
-                
-                const rank = index === 0 ? '🏆 ' : `${index + 1}. `;
-                
-                card.innerHTML = `
-                    <div class="prediction-header">
-                        <div style="flex: 1;">
-                            <div class="animal-name">
-                                ${rank}${pred.emoji || '🐾'} ${pred.species || 'Inconnu'}
-                            </div>
-                            <div style="margin-top: 10px;">
-                                <span class="category-tag">
-                                    📁 ${pred.category || 'Catégorie'} 
-                                    ${pred.category_confidence_percent ? `(${pred.category_confidence_percent})` : ''}
-                                </span>
-                            </div>
-                            ${pred.description ? `
-                                <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.9; font-style: italic;">
-                                    ${pred.description}
-                                </p>
-                            ` : ''}
-                        </div>
-                        <div class="confidence-badge">
-                            ${pred.species_confidence_percent || '0%'}
-                        </div>
-                    </div>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" style="width: ${(pred.species_confidence || 0) * 100}%"></div>
-                    </div>
-                `;
-                
-                container.appendChild(card);
-            });
-
-            document.getElementById('resultsSection').style.display = 'block';
-            
-            setTimeout(() => {
-                document.getElementById('resultsSection').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'nearest' 
-                });
-            }, 100);
-        }
-
-        function resetUpload() {
-            selectedFile = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadSection').style.display = 'block';
-            document.getElementById('previewSection').style.display = 'none';
-            document.getElementById('resultsSection').style.display = 'none';
-            hideError();
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function hideError() {
-            document.getElementById('errorMessage').style.display = 'none';
-        }
-
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {

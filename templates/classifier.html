@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificateur - Animal Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .classifier-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            padding: 1rem 2rem;
+            border: 2px solid #e31e24;
+            background: white;
+            color: #e31e24;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #e31e24;
+            color: white;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(227, 30, 36, 0.3);
+        }
+
+        .webcam-container {
+            position: relative;
+            max-width: 640px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        #webcam {
+            width: 100%;
+            display: block;
+        }
+
+        .webcam-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .prediction-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .prediction-overlay h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .overlay-prediction {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .overlay-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .overlay-confidence {
+            font-size: 1.1rem;
+            color: #4ade80;
+        }
+
+        .webcam-controls {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .control-btn {
+            padding: 0.875rem 2rem;
+            margin: 0 0.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-btn.start {
+            background: #4ade80;
+            color: white;
+        }
+
+        .control-btn.stop {
+            background: #ef4444;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e31e24;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/logo_esb.svg') }}"
+                     alt="ESPRIT Logo"
+                     class="esprit-logo">
+                <h1 class="project-title">Animal Classifier</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('dashboard') }}">Tableau de bord</a></li>
+                <li><a href="{{ url_for('classifier') }}" class="active">Classifier</a></li>
+                <li><a href="{{ url_for('logout') }}">Déconnexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="classifier-container">
+        <h1 style="text-align: center; color: #e31e24; margin-bottom: 2rem;">
+            🦁 Classificateur d'Animaux
+        </h1>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="upload">
+                📁 Upload Image
+            </button>
+            <button class="mode-btn" data-mode="webcam">
+                📷 Webcam en direct
+            </button>
+        </div>
+
+        <!-- Upload Mode -->
+        <div id="uploadMode" class="main-card">
+            <div class="upload-section" id="uploadSection">
+                <div class="upload-icon">📷</div>
+                <h2>Choisissez ou déposez une image</h2>
+                <p>Formats acceptés: JPG, PNG, JPEG (Max 16MB)</p>
+                <input type="file" id="fileInput" accept="image/*">
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    📁 Sélectionner une image
+                </button>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="preview-section" id="previewSection">
+                <h3 style="margin-bottom: 20px; color: var(--primary-red);">📸 Image sélectionnée:</h3>
+                <img id="imagePreview" class="image-preview" alt="Preview">
+                <div class="button-group">
+                    <button class="btn" id="predictBtn" onclick="predictImage()">
+                        🔍 Classifier l'animal
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">
+                        ↻ Nouvelle image
+                    </button>
+                </div>
+            </div>
+
+            <div class="loader" id="loader">
+                <div class="spinner"></div>
+                <p style="color: var(--primary-red); font-weight: bold;">Analyse en cours...</p>
+            </div>
+
+            <div class="results-section" id="resultsSection">
+                <h3 style="margin-bottom: 20px; color: var(--primary-red);">🎯 Résultats:</h3>
+                <div id="predictionsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Webcam Mode -->
+        <div id="webcamMode" class="main-card hidden">
+            <div class="webcam-container">
+                <video id="webcam" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+
+                <div class="webcam-overlay">
+                    <div class="prediction-overlay" id="predictionOverlay" style="display: none;">
+                        <h3>🎯 Détection en direct</h3>
+                        <div id="liveResults"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="webcam-controls">
+                <button class="control-btn start" id="startBtn" onclick="startWebcam()">
+                    ▶ Démarrer la caméra
+                </button>
+                <button class="control-btn stop hidden" id="stopBtn" onclick="stopWebcam()">
+                    ⏹ Arrêter
+                </button>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-value" id="frameCount">0</div>
+                    <div class="stat-label">Images analysées</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgConfidence">0%</div>
+                    <div class="stat-label">Confiance moyenne</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="fps">0</div>
+                    <div class="stat-label">FPS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mode switching
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const mode = this.dataset.mode;
+
+                // Update buttons
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Switch modes
+                if (mode === 'upload') {
+                    document.getElementById('uploadMode').classList.remove('hidden');
+                    document.getElementById('webcamMode').classList.add('hidden');
+                    stopWebcam();
+                } else {
+                    document.getElementById('uploadMode').classList.add('hidden');
+                    document.getElementById('webcamMode').classList.remove('hidden');
+                }
+            });
+        });
+
+        // Upload mode code
+        let selectedFile = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            handleFile(e.target.files[0]);
+        });
+
+        const uploadSection = document.getElementById('uploadSection');
+
+        uploadSection.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+
+        uploadSection.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        });
+
+        uploadSection.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showError('Veuillez sélectionner une image valide');
+                return;
+            }
+
+            selectedFile = file;
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('previewSection').style.display = 'block';
+                document.getElementById('resultsSection').style.display = 'none';
+                hideError();
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        async function predictImage() {
+            if (!selectedFile) return;
+
+            const predictBtn = document.getElementById('predictBtn');
+            const loader = document.getElementById('loader');
+            const resultsSection = document.getElementById('resultsSection');
+
+            predictBtn.disabled = true;
+            loader.style.display = 'block';
+            resultsSection.style.display = 'none';
+            hideError();
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data.predictions);
+                } else {
+                    showError(data.error || 'Erreur lors de la prédiction');
+                }
+            } catch (error) {
+                showError('Erreur de connexion au serveur');
+                console.error('Error:', error);
+            } finally {
+                predictBtn.disabled = false;
+                loader.style.display = 'none';
+            }
+        }
+
+        function displayResults(predictions) {
+            const container = document.getElementById('predictionsContainer');
+            container.innerHTML = '';
+
+            predictions.forEach((pred, index) => {
+                const card = document.createElement('div');
+                card.className = 'prediction-card' + (index === 0 ? ' top-prediction' : '');
+
+                const rank = index === 0 ? '🏆 ' : `${index + 1}. `;
+
+                card.innerHTML = `
+                    <div class="prediction-header">
+                        <div style="flex: 1;">
+                            <div class="animal-name">
+                                ${rank}${pred.emoji} ${pred.species}
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <span class="category-tag">
+                                    📁 ${pred.category} (${pred.category_confidence_percent})
+                                </span>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.9; font-style: italic;">
+                                ${pred.description}
+                            </p>
+                        </div>
+                        <div class="confidence-badge">
+                            ${pred.species_confidence_percent}
+                        </div>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${pred.species_confidence * 100}%"></div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function resetUpload() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('previewSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            hideError();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Webcam mode code
+        let webcamStream = null;
+        let isProcessing = false;
+        let frameCounter = 0;
+        let confidenceSum = 0;
+        let lastFrameTime = Date.now();
+        let fpsCounter = 0;
+
+        async function startWebcam() {
+            try {
+                webcamStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480 }
+                });
+
+                const video = document.getElementById('webcam');
+                video.srcObject = webcamStream;
+
+                document.getElementById('startBtn').classList.add('hidden');
+                document.getElementById('stopBtn').classList.remove('hidden');
+                document.getElementById('predictionOverlay').style.display = 'block';
+
+                // Start processing frames
+                processFrame();
+            } catch (error) {
+                alert('Erreur d\'accès à la caméra: ' + error.message);
+            }
+        }
+
+        function stopWebcam() {
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('stopBtn').classList.add('hidden');
+            document.getElementById('predictionOverlay').style.display = 'none';
+
+            isProcessing = false;
+            frameCounter = 0;
+            confidenceSum = 0;
+        }
+
+        async function processFrame() {
+            if (!webcamStream || isProcessing) {
+                if (webcamStream) {
+                    setTimeout(processFrame, 100);
+                }
+                return;
+            }
+
+            isProcessing = true;
+
+            try {
+                const video = document.getElementById('webcam');
+                const canvas = document.getElementById('canvas');
+                const context = canvas.getContext('2d');
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0);
+
+                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+                const response = await fetch('/predict_webcam', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: imageData,
+                        log: frameCounter % 10 === 0  // Log every 10th frame
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.predictions.length > 0) {
+                    displayLiveResults(data.predictions.slice(0, 3));
+
+                    frameCounter++;
+                    confidenceSum += data.predictions[0].species_confidence;
+
+                    // Update stats
+                    document.getElementById('frameCount').textContent = frameCounter;
+                    document.getElementById('avgConfidence').textContent =
+                        ((confidenceSum / frameCounter) * 100).toFixed(1) + '%';
+
+                    // Calculate FPS
+                    const now = Date.now();
+                    fpsCounter++;
+                    if (now - lastFrameTime >= 1000) {
+                        document.getElementById('fps').textContent = fpsCounter;
+                        fpsCounter = 0;
+                        lastFrameTime = now;
+                    }
+                }
+            } catch (error) {
+                console.error('Frame processing error:', error);
+            }
+
+            isProcessing = false;
+            setTimeout(processFrame, 500);  // Process every 500ms
+        }
+
+        function displayLiveResults(predictions) {
+            const container = document.getElementById('liveResults');
+            container.innerHTML = '';
+
+            predictions.forEach(pred => {
+                const div = document.createElement('div');
+                div.className = 'overlay-prediction';
+                div.innerHTML = `
+                    <span class="overlay-name">${pred.emoji} ${pred.species}</span>
+                    <span class="overlay-confidence">${pred.species_confidence_percent}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>

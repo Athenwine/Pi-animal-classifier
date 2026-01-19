@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Enseignant - Animal Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .teacher-header {
+            background: linear-gradient(135deg, #e31e24 0%, #a51419 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e31e24;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .students-table {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e31e24;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: #e31e24;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .view-btn:hover {
+            background: #c11a1f;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4ade80;
+            transition: width 0.3s;
+        }
+
+        .activity-feed {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e31e24;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-user {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .activity-detail {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .activity-time {
+            font-size: 0.85rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/logo_esb.svg') }}"
+                     alt="ESPRIT Logo"
+                     class="esprit-logo">
+                <h1 class="project-title">Animal Classifier</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('teacher_dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ url_for('classifier') }}">Classifier</a></li>
+                {% if user.is_admin() %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Déconnexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="teacher-header">
+            <h1>👨‍🏫 Dashboard Enseignant</h1>
+            <p>Bienvenue, {{ user.full_name or user.username }}</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_students }}</div>
+                <div class="stat-label">👥 Étudiants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ total_activities }}</div>
+                <div class="stat-label">🎯 Classifications totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ students|length }}</div>
+                <div class="stat-label">✅ Étudiants actifs</div>
+            </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="students-table">
+            <h2 style="color: #e31e24; margin-bottom: 1.5rem;">📊 Suivi des étudiants</h2>
+            {% if students %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Étudiant</th>
+                        <th>Email</th>
+                        <th>Classifications</th>
+                        <th>Précision moyenne</th>
+                        <th>Dernière connexion</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>
+                            <strong>{{ student.full_name or student.username }}</strong>
+                        </td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.activity_count }}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div class="progress-bar" style="width: 100px;">
+                                    <div class="progress-fill" style="width: {{ (student.accuracy_rate * 100)|round }}%;"></div>
+                                </div>
+                                <span>{{ (student.accuracy_rate * 100)|round(1) }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if student.last_login %}
+                                {{ student.last_login.strftime('%d/%m/%Y %H:%M') }}
+                            {% else %}
+                                <span style="color: #999;">Jamais</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('student_detail', student_id=student.id) }}" class="view-btn">
+                                Voir détails
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="text-align: center; color: #999; padding: 2rem;">
+                Aucun étudiant inscrit pour le moment
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="activity-feed">
+            <h2 style="color: #e31e24; margin-bottom: 1.5rem;">🕒 Activité récente</h2>
+            {% if recent_activities %}
+                {% for activity in recent_activities[:20] %}
+                <div class="activity-item">
+                    <div class="activity-avatar">
+                        {{ activity.user.username[0]|upper }}
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-user">{{ activity.user.username }}</div>
+                        <div class="activity-detail">
+                            a classifié <strong>{{ activity.predicted_species }}</strong>
+                            ({{ activity.predicted_category }})
+                            avec {{ (activity.confidence * 100)|round(1) }}% de confiance
+                        </div>
+                    </div>
+                    <div class="activity-time">
+                        {{ activity.timestamp.strftime('%H:%M') }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <p style="text-align: center; color: #999;">Aucune activité récente</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
