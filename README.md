@@ -1,4 +1,4 @@
-# 🦁 Hierarchical Animal Classifier
+#  Hierarchical Animal Classifier
 
 A deep learning web application that classifies animal images into **30 species** and **6 categories** using hierarchical classification with TensorFlow and Flask.
 
@@ -7,7 +7,7 @@ A deep learning web application that classifies animal images into **30 species*
 ![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-## 🎯 Features
+##  Features
 
 - **Hierarchical Classification**: Predicts both specific species and broad categories
 - **30 Species Recognition**: Including mammals, birds, reptiles, amphibians, insects, and fish
@@ -15,65 +15,6 @@ A deep learning web application that classifies animal images into **30 species*
 - **Interactive Web Interface**: Beautiful, responsive UI with drag-and-drop upload
 - **Real-time Predictions**: Instant classification with confidence scores
 - **Transfer Learning**: Built on MobileNetV2 pre-trained on ImageNet
-
-## 🖼️ Demo
-
-### Species Predictions
-The model identifies specific animals with high accuracy:
-
-```
-🏆 🐱 Chat (87.3%)
-   📁 Mammifères (95.2%)
-   Mammifère domestique, compagnon populaire
-
-2. 🐕 Chien (8.1%)
-   📁 Mammifères (94.8%)
-   Meilleur ami de l'homme, fidèle compagnon
-```
-
-## 📊 Model Performance
-
-| Task | Classes | Validation Accuracy |
-|------|---------|-------------------|
-| Species Classification | 30 | 75-90% |
-| Category Classification | 6 | 90-98% |
-
-## 🏗️ Architecture
-
-```
-Input Image (224x224x3)
-    ↓
-MobileNetV2 (Pre-trained on ImageNet)
-    ↓
-Global Average Pooling
-    ↓
-Shared Dense Layers (512 → 256)
-    ↓                    ↓
-Species Output      Category Output
-   (30 classes)        (6 classes)
-```
-
-## 📁 Project Structure
-
-```
-animal-classifier/
-├── hierarchical_app.py                    # Flask web application
-├── hierarchical_animal_classifier.keras   # Trained model (not in repo)
-├── class_mappings.json                    # Class label mappings
-├── requirements.txt                       # Python dependencies
-├── .gitignore                             # Git ignore rules
-├── README.md                              # This file
-├── templates/
-│   └── index.html                         # Web interface
-├── static/                                # Static assets (optional)
-├── training/
-│   └── train_hierarchical.py             # Model training script
-└── docs/
-    ├── training_history.png               # Training curves
-    └── sample_images.png                  # Dataset samples
-```
-
-## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -210,7 +151,7 @@ Edit `hierarchical_app.py`:
 app.run(debug=True, host='0.0.0.0', port=5000)  # Change port here
 ```
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Model won't load
 - Ensure TensorFlow version matches: `pip install tensorflow==2.19.0`
@@ -228,7 +169,7 @@ app.run(debug=True, host='0.0.0.0', port=5000)  # Change port here
 - Increase training epochs
 - Check for mislabeled images
 
-## 📊 API Endpoints
+##  API Endpoints
 
 ### GET `/`
 Returns the main web interface
@@ -275,7 +216,7 @@ Returns model information
 }
 ```
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -285,24 +226,19 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - **MobileNetV2**: Pre-trained model from TensorFlow/Keras
 - **ImageNet**: Pre-training dataset
 - **Flask**: Web framework
 - **TensorFlow/Keras**: Deep learning framework
 
-## 📧 Contact
+##  Contact
 
 Your Name - [@Aws Ourari](https://www.linkedin.com/in/aws-ourari-2590891b6/) - awsourari123@gmail.com
 
 Project Link: [https://github.com/Athenwine/Pi-animal-classifier](https://github.com/Athenwine/Pi-animal-classifier)
 
-## 🌟 Star History
 
 If you find this project useful, please consider giving it a star ⭐
 
