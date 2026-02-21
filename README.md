@@ -235,7 +235,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ##  Contact
 
-Your Name - [@Aws Ourari](https://www.linkedin.com/in/aws-ourari-2590891b6/) - awsourari123@gmail.com
+[@Aws Ourari](https://www.linkedin.com/in/aws-ourari-2590891b6/) - awsourari123@gmail.com
 
 Project Link: [https://github.com/Athenwine/Pi-animal-classifier](https://github.com/Athenwine/Pi-animal-classifier)
 
